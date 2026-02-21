@@ -4,34 +4,42 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ai chat ui</title>
-    <link rel="stylesheet" href="./reset.css">
-    <link rel="stylesheet" href="./ai-chat.css">
+    <link rel="stylesheet" href="./reset.css" />
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./ai-chat.css" />
+    <link rel="stylesheet" href="./ai-summary.css" />
   </head>
   <body>
-    <div id="chat-box"></div>
-    <form id="chat-form">
-      <input type="text" id="chat-input" placeholder="질문을 입력하세요..." />
-      <button type="submit">전송</button>
-    </form>
+    <div class="inner">
+      <section>
+        <div class="ai-summary-title">AI 핵심 요약</div>
+        <div id="summary-box"></div>
+      </section>
+
+      <hr />
+
+      <section>
+        <div id="chat-box"></div>
+        <form id="chat-form">
+          <input
+            type="text"
+            id="chat-input"
+            placeholder="질문을 입력하세요..."
+          />
+          <button type="submit">전송</button>
+        </form>
+      </section>
+    </div>
 
     <!-- 마크다운 파싱 라이브러리 필수-->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="./ai-core.js"></script>
     <script src="./ai-chat.js"></script>
+    <script src="./ai-summary.js"></script>
     <script>
-      // 초기 설정과 함께 인스턴스 생성
-      const chatService = new StreamHandler("#chat-box", {
-        endpoint: "https://api.openai.com/v1/chat/completions",
-        headers: {
-          Authorization:
-            "Bearer API_KEY(본인것)",
-          "Content-Type": "application/json",
-        },
-        onStart: () => {
-          console.log('질문 시작!')
-        },
-        onComplete: () => {
-          console.log("답변 완료!");
-        },
+      // 1. 챗봇 서비스 사용
+      const chatService = new AIChat("#chat-box", {
+        endpoint: "/api/chat",
       });
 
       const chatForm = document.querySelector("#chat-form");
@@ -45,12 +53,38 @@
 
         chatInput.value = "";
 
-        // submitQuestion 메소드 사용
         await chatService.submitQuestion({
-          model: "gpt-4",
-          messages: [{ role: "user", content: userInput }],
-          stream: true,
+          payload: {
+            model: "gpt-4",
+            messages: [{ role: "user", content: userInput }],
+            stream: true,
+          },
+          callbacks: {
+            onStart: () => {
+              console.log("질문 시작!");
+            },
+            onComplete: () => {
+              console.log("답변 완료!");
+            },
+          },
         });
+      });
+    </script>
+    <script>
+      // 2. 요약 서비스 사용 (질문형)
+      const summaryService = new AISummary("#summary-box", {
+        endpoint: "/api/summary",
+      });
+
+      summaryService.start({
+        callbacks: {
+          onStart: () => {
+            console.log("요약 시작!");
+          },
+          onComplete: () => {
+            console.log("요약 완료!");
+          },
+        },
       });
     </script>
   </body>

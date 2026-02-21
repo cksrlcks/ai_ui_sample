@@ -1,6 +1,8 @@
+@charset "UTF-8";
+
 :root {
   /* --- ai-chat 전용 변수 --- */
-  --ai-chat-max-width: 600px;
+  --ai-chat-max-width: 768px;
   --ai-chat-height: 500px;
   --ai-chat-padding: 20px;
   --ai-chat-gap: 16px;
