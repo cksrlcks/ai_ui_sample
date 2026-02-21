@@ -63,6 +63,7 @@ const summaryService = new AISummary("#summary-box", {
 
 // 방법 1: 질문과 함께 요청
 summaryService.start({
+  // payload 형태는 backend API 요구사항에 맞게 작성 (payload 내부 구조 그대로 Body에 직렬화되어 엔드포인트로 전송)
   payload: {
     model: "gpt-4",
     messages: [{ role: "user", content: "취업규칙 요약해줘" }],
@@ -103,8 +104,9 @@ document.querySelector("#chat-form").addEventListener("submit", async (e) => {
 
   // API 규격에 맞는 페이로드 전송
   await chatService.submitQuestion({
+    // payload 형태는 backend API 요구사항에 맞게 작성 (payload 내부 구조 그대로 Body에 직렬화되어 엔드포인트로 전송)
     payload: {
-      model: "gpt-4", // 혹은 개발팀 지정 모델
+      model: "gpt-4",
       messages: [{ role: "user", content: text }],
       stream: true,
     },

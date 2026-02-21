@@ -54,6 +54,7 @@
         chatInput.value = "";
 
         await chatService.submitQuestion({
+          // payload 형태는 backend API 요구사항에 맞게 작성
           payload: {
             model: "gpt-4",
             messages: [{ role: "user", content: userInput }],
@@ -77,6 +78,8 @@
       });
 
       summaryService.start({
+        // payload 형태는 backend API 요구사항에 맞게 작성
+        payload: {},
         callbacks: {
           onStart: () => {
             console.log("요약 시작!");
