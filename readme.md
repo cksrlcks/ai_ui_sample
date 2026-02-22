@@ -52,6 +52,41 @@ HTML의 `<head>` 또는 `<body>` 하단에 다음 코드를 추가하세요.
 
 ## 사용법
 
+### 스트리밍 데이터 구조
+AICore는 백엔드에서 **줄바꿈(\n)**으로 구분된 다음과 같은 형식의 데이터(OPENAI 응답 참조함)가 들어온다고 가정하고 설계되었습니다. 구조가 다를 경우 ai-core.js의 파싱 로직을 수정해야 합니다.
+```
+data: {"choices":[{"delta":{"reasoning_content":"생각 중..."}}]}
+
+data: {"choices":[{"delta":{"content":"안녕하세요 "}}]}
+
+data: {"choices":[{"delta":{"content":"반갑습니다."}}]}
+
+data: [DONE]
+```
+
+**ai-core.js**
+```js
+const chunk = this.decoder.decode(value, { stream: true });
+const lines = chunk.split("\n");
+
+for (const line of lines) {
+  const msg = line.replace(/^data: /, "").trim();
+  if (!msg || msg === "[DONE]") continue;
+
+  try {
+    const parsed = JSON.parse(msg);
+    const delta = parsed.choices[0]?.delta;
+    if (!delta) continue;
+
+    const thought = delta.reasoning_content || "";
+    const content = delta.content || "";
+
+    ...
+  }
+
+  ...
+}
+```
 ### 📝 AISummary (요약형)
 
 페이지 로딩 후 `start`를 호출해 시작합니다.
