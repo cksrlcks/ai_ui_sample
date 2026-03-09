@@ -43,7 +43,8 @@
       });
 
       const chatForm = document.querySelector("#chat-form");
-      const chatInput = document.querySelector("#chat-input");
+      const chatInput = chatForm.querySelector("#chat-input");
+      const chatButton = chatForm.querySelector("button");
 
       chatForm.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -63,9 +64,19 @@
           callbacks: {
             onStart: () => {
               console.log("질문 시작!");
+
+              // 접근성 추가 - 질문이 시작되면 입력 필드를 비활성화하여 사용자가 중복으로 질문을 보내는 것을 방지
+              chatButton.disabled = true; // 전송 버튼도 비활성화
+              chatInput.disabled = true; // 질문 중에는 입력 비활성화
+
             },
             onComplete: () => {
               console.log("답변 완료!");
+
+              // 접근성 추가 - 답변이 완료되면 입력 필드를 다시 활성화하여 사용자가 새로운 질문을 할 수 있도록 허용
+              chatButton.disabled = false; // 전송 버튼도 활성화
+              chatInput.disabled = false; // 질문 완료 후 입력 활성화
+              chatInput.focus();
             },
           },
         });
